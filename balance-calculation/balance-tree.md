@@ -21,33 +21,25 @@
 ## 2. Пространство измерений
 
 Пусть задано конечное упорядоченное множество измерений
-$begin:math:display$
-\\mathbb D \= \(d\_1\,\\dots\,d\_n\)\.
-$end:math:display$
+$$\mathbb D = (d_1, \dots, d_n).$$
 
-Для каждого измерения $begin:math:text$d\_i$end:math:text$ задано множество допустимых значений
-$begin:math:display$
-Val\(d\_i\)\.
-$end:math:display$
+Для каждого измерения$d_i$ задано множество допустимых значений
+$$Val(d_i).$$
 
 Для каждого измерения вводится специальное значение
-$begin:math:display$
-0\_i \\notin Val\(d\_i\)\,
-$end:math:display$
+$$0_i \notin Val(d_i),$$
 которое является **специальным структурным значением**, а не обычным значением измерения.
 
 Тогда расширенное множество значений измерения:
-$begin:math:display$
-Val\^\*\(d\_i\)\=Val\(d\_i\)\\cup\\\{0\_i\\\}\.
-$end:math:display$
+$$Val^*(d_i) = Val(d_i) \cup \{0_i\}.$$
 
 ### Бизнес-смысл
 
 Если, например:
 
-- $begin:math:text$d\_1 \=$end:math:text$ `account_type`,
-- $begin:math:text$d\_2 \=$end:math:text$ `country`,
-- $begin:math:text$d\_3 \=$end:math:text$ `vertical`,
+-$d_1 =$ `account_type`,
+-$d_2 =$ `country`,
+-$d_3 =$ `vertical`,
 
 то значение `0_2` не означает, что страна “равна нулю” и не является бизнес-значением страны.
 
@@ -61,34 +53,28 @@ $end:math:display$
 
 Таким образом:
 
-- $begin:math:text$0\_i$end:math:text$ — не обычное значение измерения;
-- узел, содержащий $begin:math:text$0\_i$end:math:text$, имеет бизнес-смысл **нераспределённой массы относительно измерения $begin:math:text$d\_i$end:math:text$ и всех последующих измерений**.
+-$0_i$ — не обычное значение измерения;
+- узел, содержащий$0_i$, имеет бизнес-смысл **нераспределённой массы относительно измерения$d_i$ и всех последующих измерений**.
 
 ---
 
 ## 3. Узлы дерева
 
-Балансное дерево строится как множество путей длины $begin:math:text$n$end:math:text$:
-$begin:math:display$
-\\Omega \= Val\^\*\(d\_1\)\\times \\dots \\times Val\^\*\(d\_n\)\,
-$end:math:display$
+Балансное дерево строится как множество путей длины$n$:
+$$\Omega = Val^*(d_1) \times \dots \times Val^*(d_n),$$
 но допустимыми считаются только **канонические древовидные пути**.
 
 Путь
-$begin:math:display$
-p\=\(x\_1\,\\dots\,x\_n\)\\in \\Omega
-$end:math:display$
-называется каноническим древовидным путём, если существует индекс $begin:math:text$r$end:math:text$, $begin:math:text$0 \\le r \\le n$end:math:text$, такой что:
+$$p = (x_1, \dots, x_n) \in \Omega$$
+называется каноническим древовидным путём, если существует индекс$r$,$0 \le r \le n$, такой что:
 
-- для всех $begin:math:text$i \\le r$end:math:text$: $begin:math:text$x\_i \\in Val\(d\_i\)$end:math:text$,
-- для всех $begin:math:text$i \> r$end:math:text$: $begin:math:text$x\_i \= 0\_i$end:math:text$.
+- для всех$i \le r$:$x_i \in Val(d_i)$,
+- для всех$i > r$:$x_i = 0_i$.
 
 Иными словами, после первого незаполненного измерения все следующие измерения тоже должны быть незаполненными.
 
 Обозначим множество всех канонических древовидных путей через
-$begin:math:display$
-T \\subseteq \\Omega\.
-$end:math:display$
+$$T \subseteq \Omega.$$
 
 ### Бизнес-смысл
 
@@ -123,54 +109,36 @@ $end:math:display$
 ## 4. Структура дерева
 
 Для любого пути
-$begin:math:display$
-p\=\(x\_1\,\\dots\,x\_n\)\\in T
-$end:math:display$
+$$p = (x_1, \dots, x_n) \in T$$
 его глубина определяется как число первых ненулевых компонент:
-$begin:math:display$
-depth\(p\)\=r\.
-$end:math:display$
+$$depth(p) = r.$$
 
 ### Родитель
 
-Если $begin:math:text$depth\(p\)\=r\>0$end:math:text$, то родитель пути $begin:math:text$p$end:math:text$ — это путь
-$begin:math:display$
-parent\(p\)\=\(x\_1\,\\dots\,x\_\{r\-1\}\,0\_r\,\\dots\,0\_n\)\.
-$end:math:display$
+Если$depth(p) = r > 0$, то родитель пути$p$ — это путь
+$$parent(p) = (x_1, \dots, x_{r-1}, 0_r, \dots, 0_n).$$
 
 ### Дети
 
-Если $begin:math:text$depth\(p\)\=r\<n$end:math:text$, то для любого значения
-$begin:math:display$
-v \\in Val\(d\_\{r\+1\}\)
-$end:math:display$
-ребёнком пути $begin:math:text$p$end:math:text$ является путь
-$begin:math:display$
-child\(p\,v\)\=\(x\_1\,\\dots\,x\_r\,v\,0\_\{r\+2\}\,\\dots\,0\_n\)\.
-$end:math:display$
+Если$depth(p) = r < n$, то для любого значения
+$$v \in Val(d_{r+1})$$
+ребёнком пути$p$ является путь
+$$child(p, v) = (x_1, \dots, x_r, v, 0_{r+2}, \dots, 0_n).$$
 
 ### Корень
 
 Корень дерева:
-$begin:math:display$
-root\=\(0\_1\,\\dots\,0\_n\)\.
-$end:math:display$
+$$root = (0_1, \dots, 0_n).$$
 
 ### Бизнес-смысл
 
 Если узел:
-$begin:math:display$
-p\=\(income\,EE\,0\)\,
-$end:math:display$
+$$p = (income, EE, 0),$$
 то его дети — это:
-$begin:math:display$
-\(income\,EE\,Food\)\,\\quad \(income\,EE\,Grocery\)\, \\dots
-$end:math:display$
+$$(income, EE, Food), \quad (income, EE, Grocery), \dots$$
 
 А родитель:
-$begin:math:display$
-\(income\,0\,0\)\.
-$end:math:display$
+$$(income, 0, 0).$$
 
 С точки зрения бизнеса:
 
@@ -183,34 +151,28 @@ $end:math:display$
 - `(income,EE,0)` — часть этой массы, относящаяся к Эстонии;
 - `(income,EE,Food)` — часть массы Эстонии, относящаяся к вертикали Food.
 
-Таким образом, дерево интерпретируется как **иерархия последовательного распределения массы**, а узлы с $begin:math:text$0\_i$end:math:text$ — как состояния, в которых распределение по очередному измерению ещё не раскрыто.
+Таким образом, дерево интерпретируется как **иерархия последовательного распределения массы**, а узлы с$0_i$ — как состояния, в которых распределение по очередному измерению ещё не раскрыто.
 
 ---
 
 ## 5. Импульс
 
-Импульс $begin:math:text$I$end:math:text$ задаётся парой:
-$begin:math:display$
-I\=\(F\,\\Delta\)\,
-$end:math:display$
+Импульс$I$ задаётся парой:
+$$I = (F, \Delta),$$
 где:
 
-- $begin:math:text$F$end:math:text$ — полный фиксированный путь значений измерений,
-- $begin:math:text$\\Delta \\in \\mathbb R$end:math:text$ — числовой вклад.
+-$F$ — полный фиксированный путь значений измерений,
+-$\Delta \in \mathbb R$ — числовой вклад.
 
 Полный путь:
-$begin:math:display$
-F\=\(v\_1\,\\dots\,v\_n\)\, \\qquad v\_i \\in Val\(d\_i\)\.
-$end:math:display$
+$$F = (v_1, \dots, v_n), \qquad v_i \in Val(d_i).$$
 
 ### Бизнес-смысл
 
 Импульс — это элементарное событие записи в систему.
 
 Например:
-$begin:math:display$
-F\=\(expense\,EE\,Food\)\,\\qquad \\Delta\=120\.
-$end:math:display$
+$$F = (expense, EE, Food), \qquad \Delta = 120.$$
 
 Это означает: пришла транзакция величиной 120, относящаяся к расходам, Эстонии и вертикали Food.
 
@@ -218,36 +180,22 @@ $end:math:display$
 
 ## 6. Канонический путь импульса в дереве
 
-Каждому полному пути $begin:math:text$F\=\(v\_1\,\\dots\,v\_n\)$end:math:text$ соответствует цепочка узлов дерева:
-$begin:math:display$
-\\pi\(F\)\=\\\{p\_0\,p\_1\,\\dots\,p\_n\\\}\,
-$end:math:display$
+Каждому полному пути$F = (v_1, \dots, v_n)$ соответствует цепочка узлов дерева:
+$$\pi(F) = \{p_0, p_1, \dots, p_n\},$$
 где:
 
-$begin:math:display$
-p\_0\=\(0\_1\,\\dots\,0\_n\)\,
-$end:math:display$
-$begin:math:display$
-p\_1\=\(v\_1\,0\_2\,\\dots\,0\_n\)\,
-$end:math:display$
-$begin:math:display$
-p\_2\=\(v\_1\,v\_2\,0\_3\,\\dots\,0\_n\)\,
-$end:math:display$
-$begin:math:display$
-\\dots
-$end:math:display$
-$begin:math:display$
-p\_n\=\(v\_1\,\\dots\,v\_n\)\.
-$end:math:display$
+$$p_0 = (0_1, \dots, 0_n),$$
+$$p_1 = (v_1, 0_2, \dots, 0_n),$$
+$$p_2 = (v_1, v_2, 0_3, \dots, 0_n),$$
+$$\dots$$
+$$p_n = (v_1, \dots, v_n).$$
 
-Это единственный корневой путь в дереве, соответствующий импульсу $begin:math:text$F$end:math:text$.
+Это единственный корневой путь в дереве, соответствующий импульсу$F$.
 
 ### Бизнес-смысл
 
 Если
-$begin:math:display$
-F\=\(expense\,EE\,Food\)\,
-$end:math:display$
+$$F = (expense, EE, Food),$$
 то импульс проходит по узлам:
 
 - `(0,0,0)`
@@ -260,28 +208,19 @@ $end:math:display$
 ## 7. Балансная функция дерева
 
 На множестве узлов дерева определяется балансная функция
-$begin:math:display$
-B\:T \\to \\mathbb R\.
-$end:math:display$
+$$B : T \to \mathbb R.$$
 
 Изначально:
-$begin:math:display$
-B\(p\)\=0 \\qquad \\forall p\\in T\.
-$end:math:display$
+$$B(p) = 0 \qquad \forall p \in T.$$
 
-При записи импульса $begin:math:text$I\=\(F\,\\Delta\)$end:math:text$ обновляются **все узлы пути** $begin:math:text$\\pi\(F\)$end:math:text$:
+При записи импульса$I = (F, \Delta)$ обновляются **все узлы пути**$\pi(F)$:
 
-$begin:math:display$
-B\(p\) \\leftarrow B\(p\)\+\\Delta
-\\qquad \\forall p\\in \\pi\(F\)\.
-$end:math:display$
+$$B(p) \leftarrow B(p) + \Delta \qquad \forall p \in \pi(F).$$
 
 ### Бизнес-смысл
 
 Если пришёл импульс:
-$begin:math:display$
-\(expense\,EE\,Food\)\,\\quad \\Delta\=120\,
-$end:math:display$
+$$(expense, EE, Food), \quad \Delta = 120,$$
 то 120 прибавляется:
 
 - к корню,
@@ -297,26 +236,20 @@ $end:math:display$
 
 ### 8.1. Локальное балансное уравнение
 
-Для любого внутреннего узла $begin:math:text$p\\in T$end:math:text$, имеющего детей, должно выполняться:
-$begin:math:display$
-B\(p\)\=\\sum\_\{c\\in Children\(p\)\} B\(c\)\.
-$end:math:display$
+Для любого внутреннего узла$p \in T$, имеющего детей, должно выполняться:
+$$B(p) = \sum_{c \in Children(p)} B(c).$$
 
 Это и есть основное балансное уравнение дерева.
 
 ### 8.2. Глобальная аддитивность
 
-Для любого узла $begin:math:text$p$end:math:text$ его значение равно сумме значений всех листьев его поддерева:
-$begin:math:display$
-B\(p\)\=\\sum\_\{\\ell \\in Leaves\(p\)\} B\(\\ell\)\.
-$end:math:display$
+Для любого узла$p$ его значение равно сумме значений всех листьев его поддерева:
+$$B(p) = \sum_{\ell \in Leaves(p)} B(\ell).$$
 
 ### 8.3. Аддитивность по импульсам
 
-Если $begin:math:text$E\_1$end:math:text$ и $begin:math:text$E\_2$end:math:text$ — два множества импульсов, то:
-$begin:math:display$
-B\^\{E\_1\\cup E\_2\}\(p\)\=B\^\{E\_1\}\(p\)\+B\^\{E\_2\}\(p\)\.
-$end:math:display$
+Если$E_1$ и$E_2$ — два множества импульсов, то:
+$$B^{E_1 \cup E_2}(p) = B^{E_1}(p) + B^{E_2}(p).$$
 
 ### Бизнес-смысл
 
@@ -326,9 +259,7 @@ $end:math:display$
 - `(expense,EE,Grocery)` = 30
 
 то:
-$begin:math:display$
-B\(expense\,EE\,0\)\=120\+30\=150\.
-$end:math:display$
+$$B(expense, EE, 0) = 120 + 30 = 150.$$
 
 Это свойство должно выполняться всегда. Именно оно делает дерево строгим балансным объектом.
 
@@ -354,9 +285,7 @@ $end:math:display$
 ### Бизнес-пример
 
 Если для импульса
-$begin:math:display$
-\(expense\,EE\,Food\)\,\\quad 120
-$end:math:display$
+$$(expense, EE, Food), \quad 120$$
 одновременно хранить в одном и том же дереве:
 
 - базовый путь `(expense,EE,Food)`,
@@ -374,19 +303,13 @@ $end:math:display$
 Проекция определяется как отдельная сущность над уже существующими данными дерева.
 
 Пусть задано подмножество измерений
-$begin:math:display$
-H \\subseteq \\mathbb D\.
-$end:math:display$
+$$H \subseteq \mathbb D.$$
 
 Тогда проекция — это агрегат, который строится не как узел дерева, а как внешняя функция
-$begin:math:display$
-P\_H \: \\text\{данные дерева\} \\to \\mathbb R\.
-$end:math:display$
+$$P_H : \text{данные дерева} \to \mathbb R.$$
 
-Если $begin:math:text$k\_H$end:math:text$ — ключ проекции на измерениях $begin:math:text$H$end:math:text$, то
-$begin:math:display$
-P\_H\(k\_H\)
-$end:math:display$
+Если$k_H$ — ключ проекции на измерениях$H$, то
+$$P_H(k_H)$$
 определяется как сумма тех leaf-значений дерева, которые согласованы с этим ключом.
 
 ### Бизнес-смысл
@@ -399,10 +322,7 @@ $end:math:display$
 
 то проекция “по странам” вычисляется как отдельная сущность:
 
-$begin:math:display$
-P\_\{\\\{country\\\}\}\(EE\)\=
-\\sum\_\{\\text\{все leaf\-пути с country\=EE\}\} B\(\\ell\)\.
-$end:math:display$
+$$P_{\{country\}}(EE) = \sum_{\text{все leaf-пути с country = EE}} B(\ell).$$
 
 Это не узел дерева, а внешний аналитический баланс.
 
@@ -417,9 +337,7 @@ $end:math:display$
 Любой импульс, допустимый для системы, должен быть записан в дерево по своему каноническому пути.
 
 То есть базовая запись в дерево всегда имеет вид:
-$begin:math:display$
-I\=\(F\,\\Delta\)\\mapsto \\pi\(F\)\.
-$end:math:display$
+$$I = (F, \Delta) \mapsto \pi(F).$$
 
 Фильтр не должен ограничивать эту запись.
 
@@ -448,28 +366,18 @@ $end:math:display$
 
 ## 12. Материализация проекций
 
-Пусть задана проекция $begin:math:text$P\_H$end:math:text$ и фильтр $begin:math:text$Q$end:math:text$.
+Пусть задана проекция$P_H$ и фильтр$Q$.
 
-Тогда materialized projection определяется только на тех ключах $begin:math:text$k\_H$end:math:text$, которые удовлетворяют фильтру:
-$begin:math:display$
-Q\(k\_H\)\=1\.
-$end:math:display$
+Тогда materialized projection определяется только на тех ключах$k_H$, которые удовлетворяют фильтру:
+$$Q(k_H) = 1.$$
 
 Итоговое значение materialized projection:
-$begin:math:display$
-\\widetilde P\_H\(k\_H\)\=
-\\begin\{cases\}
-P\_H\(k\_H\)\, \& Q\(k\_H\)\=1\,\\\\
-\\text\{не materialize\-ится\}\, \& Q\(k\_H\)\=0\.
-\\end\{cases\}
-$end:math:display$
+$$\widetilde{P}_H(k_H) = \begin{cases} P_H(k_H), & Q(k_H) = 1, \\ \text{не materialize-ится}, & Q(k_H) = 0. \end{cases}$$
 
 ### Бизнес-смысл
 
 Если есть проекция по странам и фильтр:
-$begin:math:display$
-country \\in \\\{EE\,LV\\\}\,
-$end:math:display$
+$$country \in \{EE, LV\},$$
 то:
 
 - `P_country(EE)` materialize-ится,
@@ -484,19 +392,15 @@ $end:math:display$
 
 ### 13.1. Чтение из дерева
 
-Для любого узла дерева $begin:math:text$p\\in T$end:math:text$:
-$begin:math:display$
-ReadTree\(p\)\=B\(p\)\.
-$end:math:display$
+Для любого узла дерева$p \in T$:
+$$ReadTree(p) = B(p).$$
 
 Это чтение базового балансного слоя.
 
 ### 13.2. Чтение из проекции
 
 Для любой materialized projection:
-$begin:math:display$
-ReadProjection\(H\,k\_H\)\=\\widetilde P\_H\(k\_H\)\.
-$end:math:display$
+$$ReadProjection(H, k_H) = \widetilde{P}_H(k_H).$$
 
 ### Бизнес-смысл
 
@@ -540,17 +444,7 @@ $end:math:display$
 
 ## 16. Итоговая схема
 
-$begin:math:display$
-\\text\{Импульс\}
-\\to
-\\text\{Канонический путь в дереве\}
-\\to
-\\text\{Строго аддитивное балансное дерево\}
-\\to
-\\text\{Внешние проекции\}
-\\to
-\\text\{Фильтр materialization\}
-$end:math:display$
+$$\text{Импульс} \to \text{Канонический путь в дереве} \to \text{Строго аддитивное балансное дерево} \to \text{Внешние проекции} \to \text{Фильтр materialization}$$
 
 где:
 
@@ -564,15 +458,11 @@ $end:math:display$
 ## 17. Базовая формула модели
 
 Для дерева:
-$begin:math:display$
-B\(p\)
-\=
-\\sum\_\{\\substack\{I\=\(F\,\\Delta\)\\\\ p\\in \\pi\(F\)\}\} \\Delta\.
-$end:math:display$
+$$B(p) = \sum_{\substack{I = (F, \Delta)\\ p \in \pi(F)}} \Delta.$$
 
 ### Объяснение формулы
 
-Значение узла $begin:math:text$p$end:math:text$ равно сумме всех импульсов, пути которых проходят через этот узел.
+Значение узла$p$ равно сумме всех импульсов, пути которых проходят через этот узел.
 
 ### Бизнес-смысл
 
@@ -588,13 +478,9 @@ $end:math:display$
 
 ## 18. Базовая формула проекции
 
-Для внешней проекции по измерениям $begin:math:text$H$end:math:text$:
-$begin:math:display$
-P\_H\(k\_H\)
-\=
-\\sum\_\{\\substack\{\\ell \\in Leaves\\\\ \\ell\|\_H \= k\_H\}\} B\(\\ell\)\,
-$end:math:display$
-где $begin:math:text$\\ell\|\_H$end:math:text$ — ограничение leaf-пути на измерения $begin:math:text$H$end:math:text$.
+Для внешней проекции по измерениям$H$:
+$$P_H(k_H) = \sum_{\substack{\ell \in Leaves\\ \ell|_H = k_H}} B(\ell),$$
+где$\ell|_H$ — ограничение leaf-пути на измерения$H$.
 
 ### Бизнес-смысл
 
@@ -616,4 +502,4 @@ $end:math:display$
 Именно такое разделение позволяет одновременно:
 
 - сохранить строгую математику балансного дерева;
-- получить гибкость аналитического слоя.
+- получить гибкость аналитического слоя.201
