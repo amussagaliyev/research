@@ -95,7 +95,7 @@ Example of an accounting transaction:
 - `account_type = expense`
 - `account_subtype = ops_cost`
 - `country = EE`
-- `legal_entity = Bolt Ops OÜ`
+- `legal_entity = Company Ops OÜ`
 - `Val(e) = 120`
 
 Example of a GMV event:
@@ -297,7 +297,7 @@ If the domain is all `trx + EUR`, then a rule may select within it:
 - only `account_type = expense`,
 - only `country in {EE, LV}`,
 - only `vertical = Food`,
-- only `legal_entity = Bolt Ops OÜ`.
+- only `legal_entity = Company Ops OÜ`.
 
 The domain fixes the sum class, and the rule specifies which balance or aggregate within that class we wish to maintain.
 
@@ -504,7 +504,7 @@ The client should not guess the config. The client must know the complete canoni
 
 Examples of read paths:
 
-- `trx / EUR / expense / ops_cost / EE / Bolt Ops OÜ`
+- `trx / EUR / expense / ops_cost / EE / Company Ops OÜ`
 - `rep / EUR / GMV / country=LV / vertical=Food`
 
 If such a path is supported by the system, the balance is read directly.
@@ -723,8 +723,8 @@ Materialization:
 
 Then the family maintains rows such as:
 
-- `trx / EUR / expense / ops_cost / EE / Bolt Ops OÜ`
-- `trx / EUR / expense / ops_cost / LV / Bolt Technology OU`
+- `trx / EUR / expense / ops_cost / EE / Company Ops OÜ`
+- `trx / EUR / expense / ops_cost / LV / Company Technology OU`
 
 This is an accounting balance by account, refined by analytics.
 

@@ -105,7 +105,7 @@ Val(e) \in \mathbb R.
 - `account_type = expense`
 - `account_subtype = ops_cost`
 - `country = EE`
-- `legal_entity = Bolt Ops OÜ`
+- `legal_entity = Company Ops OÜ`
 - `Val(e) = 120`
 
 Пример GMV-события:
@@ -335,7 +335,7 @@ e\in D \land Scope_R(e)=1.
 - только `account_type = expense`,
 - только `country in {EE, LV}`,
 - только `vertical = Food`,
-- только `legal_entity = Bolt Ops OÜ`.
+- только `legal_entity = Company Ops OÜ`.
 
 Домен задаёт класс суммы, а rule — какой именно balance или агрегат внутри этого класса мы хотим вести.
 
@@ -566,7 +566,7 @@ O(1).
 
 Примеры путей чтения:
 
-- `trx / EUR / expense / ops_cost / EE / Bolt Ops OÜ`
+- `trx / EUR / expense / ops_cost / EE / Company Ops OÜ`
 - `rep / EUR / GMV / country=LV / vertical=Food`
 
 Если такой path поддерживается системой, balance читается напрямую.
@@ -818,8 +818,8 @@ Materialization:
 
 Тогда family ведёт строки вида:
 
-- `trx / EUR / expense / ops_cost / EE / Bolt Ops OÜ`
-- `trx / EUR / expense / ops_cost / LV / Bolt Technology OU`
+- `trx / EUR / expense / ops_cost / EE / Company Ops OÜ`
+- `trx / EUR / expense / ops_cost / LV / Company Technology OU`
 
 Это бухгалтерский balance по счёту, уточнённый аналитикой.
 
