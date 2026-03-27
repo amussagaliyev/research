@@ -641,7 +641,7 @@ Delivery time SLA: "95% of orders delivered in under 30 minutes." Monitoring thi
 
 ### 15.4. Bloom Filter (Approximate Membership Testing)
 
-**Problem:** has a given merchant_id appeared among transactions per country per month.
+**Problem:** has a given `merchant_id` appeared among transactions per country per month.
 
 $$\mathcal A_{bloom} = (\{0,1\}^m,\ \mathbf{0},\ \lor,\ inc,\ val)$$
 

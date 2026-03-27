@@ -254,7 +254,7 @@ However, as-of balance is **not additive with respect to periods**: one cannot s
 
 If maintaining an accounting balance on an account:
 
-- $B^{asof}(\text{expense/ops\_cost/EE}, \text{2025-03}) = 450\,000$ means: at the end of March 2025, cumulative ops_cost expenses for Estonia total 450,000.
+- $B^{asof}(\text{expense/ops\_cost/EE}, \text{2025-03}) = 450\,000$ means: at the end of March 2025, cumulative `ops_cost` expenses for Estonia total 450,000.
 - $B^{asof}(\text{expense/ops\_cost/EE}, \text{2025-04}) = 570\,000$ means: at the end of April—570,000.
 - Turnover for April: $570\,000 - 450\,000 = 120\,000$.
 
