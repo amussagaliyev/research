@@ -715,4 +715,4 @@ CREATE INDEX timeframe_week_idx IF NOT EXISTS FOR (t:TimeFrame) ON (t.week);
 CREATE INDEX timeframe_yearweek_idx IF NOT EXISTS FOR (t:TimeFrame) ON (t.yearWeek);
 
 // TagAssignment indexes
-CREATE INDEX tag_assignment_
+CREATE INDEX tag_assignment
