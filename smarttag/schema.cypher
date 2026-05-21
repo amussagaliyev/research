@@ -715,4 +715,20 @@ CREATE INDEX timeframe_week_idx IF NOT EXISTS FOR (t:TimeFrame) ON (t.week);
 CREATE INDEX timeframe_yearweek_idx IF NOT EXISTS FOR (t:TimeFrame) ON (t.yearWeek);
 
 // TagAssignment indexes
-CREATE INDEX tag_assignment
+CREATE INDEX tag_assignment_ticket_idx IF NOT EXISTS FOR (ta:TagAssignment) ON (ta.ticket_id);
+CREATE INDEX tag_assignment_tag_idx IF NOT EXISTS FOR (ta:TagAssignment) ON (ta.tag_name);
+CREATE INDEX tag_assignment_timeframe_idx IF NOT EXISTS FOR (ta:TagAssignment) ON (ta.timeframe_id);
+CREATE INDEX tag_assignment_weights_idx IF NOT EXISTS FOR (ta:TagAssignment) ON (ta.semantical_weight, ta.aggregated_weight);
+
+// RELATIONSHIP PROPERTY INDEXES
+// Status timestamp index
+CREATE INDEX status_timestamp_idx IF NOT EXISTS FOR ()-[r:HAS_STATUS]-() ON (r.timestamp);
+
+// Ticket relationship indexes (if used in relationships)
+CREATE INDEX related_to_score_idx IF NOT EXISTS FOR ()-[r:RELATED_TO]-() ON (r.similarity_score);
+CREATE INDEX related_to_type_idx IF NOT EXISTS FOR ()-[r:RELATED_TO]-() ON (r.relation_type);
+
+// COMPOSITE NODE INDEXES
+CREATE INDEX ticket_project_idx IF NOT EXISTS FOR (t:Ticket) ON (t.ticket_id, t.created);
+
+CREATE VECTOR INDEX ticket_embedding_index IF NOT EXISTS FOR (t:Ticket) ON t.embedding;
