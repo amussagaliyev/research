@@ -508,4 +508,192 @@ export class NaturalLanguageQueryService {
         WITH t.ticket_id AS TicketID, t.title AS Title, 
              status.name AS Status, statusRel.timestamp AS TransitionTime
         ORDER BY TicketID, TransitionTime
-        RETURN TicketID, Title, Status, TransitionTi
+        RETURN TicketID, Title, Status, TransitionTime
+        LIMIT 100
+        
+        // Example 2: Analyze tag distribution by team member
+        MATCH (p:Person)<-[:ASSIGNED_TO]-(t:Ticket)-[:HAS_ASSIGNMENT]->(ta:TagAssignment)-[:FOR_TAG]->(tag:Tag)
+        WHERE p.name IS NOT NULL
+        WITH p.name AS TeamMember, tag.name AS Tag, count(t) AS TicketCount
+        ORDER BY TeamMember, TicketCount DESC
+        RETURN TeamMember, collect({tag: Tag, count: TicketCount})[0..5] AS TopTags
+        LIMIT 100
+        
+        // Example 3: Track ticket resolution time trends by project
+        MATCH (t:Ticket)-[:BELONGS_TO]->(p:Project)
+        MATCH (t)-[:CREATED_IN]->(created:TimeFrame)
+        MATCH (t)-[:HAS_STATUS]->(resolved:Status {name: 'Done'})
+        WITH p.name AS Project, created.yearWeek AS Week,
+             avg(duration.between(t.created, resolved.timestamp).days) AS AvgResolutionDays
+        ORDER BY Project, Week
+        RETURN Project, Week, AvgResolutionDays
+        LIMIT 100
+        
+        // Example 4: Find tickets with complex dependency chains
+        MATCH path = (t1:Ticket)-[:RELATED_TO*1..3]->(t2:Ticket)
+        WHERE t1.ticket_id <> t2.ticket_id
+        AND all(r IN relationships(path) WHERE r.similarity_score_ai > 0.7)
+        WITH t1, t2, length(path) AS ChainLength
+        ORDER BY ChainLength DESC
+        RETURN t1.ticket_id AS StartTicket, t2.ticket_id AS EndTicket, 
+               t1.title AS StartTitle, t2.title AS EndTitle,
+               ChainLength
+        LIMIT 50
+        
+        // Example 5: Identify emerging technical areas by analyzing tag trends
+        MATCH (tag:Tag)-[r:APPEARS_IN_TIMEFRAME]->(tf:TimeFrame)
+        WHERE tf.year >= 2023
+        WITH tag.name AS TagName, 
+             sum(r.statistical_weight) AS ImportanceScore,
+             count(tf) AS Frequency,
+             max(r.last_used_at) AS LastUsed
+        ORDER BY ImportanceScore DESC
+        RETURN TagName, ImportanceScore, Frequency, LastUsed
+        LIMIT 20
+
+        // Example 6: Paginated view of tickets with effective pagination
+        MATCH (t:Ticket)-[:BELONGS_TO]->(p:Project)
+        WHERE p.name = 'Apache Flink'
+        WITH t ORDER BY t.created DESC
+        // Skip the first 20 records (page 1 if page size is 20)
+        SKIP 20
+        // Limit to 20 records per page
+        LIMIT 20
+        MATCH (t)-[:HAS_STATUS]->(s:Status)
+        MATCH (t)-[:ASSIGNED_TO]->(person:Person)
+        RETURN t.ticket_id AS TicketID, 
+               t.title AS Title,
+               t.created AS CreatedDate,
+               s.name AS Status,
+               person.name AS Assignee
+
+        // Example 7: Find tickets similar to FLINK-1456 based on tag overlap and semantical weights
+        MATCH (sourceTicket:Ticket {ticket_id: "FLINK-1456"})
+        MATCH (sourceTicket)-[:HAS_ASSIGNMENT]->(sourceTA:TagAssignment)-[:FOR_TAG]->(sourceTag:Tag)
+        
+        // Find other tickets that share tags with our source ticket
+        MATCH (otherTicket:Ticket)
+        WHERE otherTicket.ticket_id <> sourceTicket.ticket_id
+        MATCH (otherTicket)-[:HAS_ASSIGNMENT]->(otherTA:TagAssignment)-[:FOR_TAG]->(sourceTag)
+        
+        // Calculate similarity based on shared tags and their weights
+        WITH sourceTicket, otherTicket,
+             // Collect all tag assignments for source ticket with their weights
+             collect(DISTINCT {
+               tag: sourceTag.name, 
+               weight: sourceTA.semantical_weight
+             }) AS sourceTags,
+             // Collect all shared tags between tickets with their weights in other ticket
+             collect(DISTINCT {
+               tag: sourceTag.name, 
+               weight: otherTA.semantical_weight
+             }) AS sharedTags,
+             // Count total tags on other ticket for normalization
+             size((otherTicket)-[:HAS_ASSIGNMENT]->()-[:FOR_TAG]->()) AS otherTicketTagCount
+        
+        // Calculate weighted similarity score considering tag importance
+        WITH sourceTicket, otherTicket, 
+             sourceTags, sharedTags, otherTicketTagCount,
+             // Jaccard similarity component (shared tags / union of tags)
+             size(sharedTags) * 1.0 / (size(sourceTags) + otherTicketTagCount - size(sharedTags)) AS jaccardSim,
+             // Weighted similarity based on tag weights in both tickets
+             reduce(s = 0.0, 
+                   st IN sharedTags | 
+                   s + (st.weight * 
+                        filter(x IN sourceTags WHERE x.tag = st.tag)[0].weight)
+             ) / size(sharedTags) AS weightedSim
+        
+        // Calculate combined similarity score
+        WITH sourceTicket, otherTicket,
+             (jaccardSim * 0.4) + (weightedSim * 0.6) AS similarityScore
+        WHERE similarityScore > 0.3
+        
+        // Return similar tickets ordered by similarity score
+        RETURN sourceTicket.ticket_id AS SourceTicket,
+               otherTicket.ticket_id AS SimilarTicket,
+               otherTicket.title AS SimilarTicketTitle,
+               similarityScore AS Similarity
+        ORDER BY similarityScore DESC
+        LIMIT 25
+
+        // Example 8: Semantic similarity using vector embeddings
+        // This query finds tickets semantically similar to a reference ticket by comparing their embedding vectors
+        // It uses cosine similarity to measure the semantic relatedness between ticket content
+        MATCH (t1:Ticket {ticket_id: "FLINK-1456"})
+        WHERE t1.embedding IS NOT NULL
+        MATCH (t2:Ticket)
+        WHERE t2.ticket_id <> "FLINK-1456" 
+          AND t2.embedding IS NOT NULL
+        
+        // Calculate cosine similarity between embedding vectors
+        WITH t1, t2,
+             // Calculate dot product
+             reduce(s = 0.0, i IN range(0, size(t1.embedding)-1) | 
+                    s + t1.embedding[i] * t2.embedding[i]) AS dotProduct,
+             // Calculate magnitude of first vector
+             sqrt(reduce(s = 0.0, i IN range(0, size(t1.embedding)-1) | 
+                    s + t1.embedding[i] * t1.embedding[i])) AS norm1,
+             // Calculate magnitude of second vector
+             sqrt(reduce(s = 0.0, i IN range(0, size(t2.embedding)-1) | 
+                    s + t2.embedding[i] * t2.embedding[i])) AS norm2
+        
+        // Calculate cosine similarity
+        WITH t1, t2, dotProduct/(norm1*norm2) AS similarityScore
+        WHERE similarityScore > 0.65
+        
+        // Return similar tickets ordered by semantic similarity
+        RETURN t1.ticket_id AS SourceTicket,
+               t2.ticket_id AS SimilarTicket,
+               t2.title AS SimilarTicketTitle,
+               similarityScore AS SemanticSimilarity
+        ORDER BY similarityScore DESC
+        LIMIT 25
+    `;
+    }
+
+    /**
+     * Prepares the system prompt for the fix AI service
+     */
+    private prepareFixSystemInstructions(): string {
+        return `
+            You are an expert Neo4j Cypher query debugger. Your role is to fix problematic Cypher queries that failed to execute against our Neo4j database. 
+            
+            ## Your Task
+            Given a failed Cypher query and its error message, you will:
+            1. Analyze the error message carefully
+            2. Identify the root cause of the failure
+            3. Modify the query to fix the issue while preserving the original intent
+            4. Return a JSON response with the fixed query
+            
+            ## Database Structure
+            The following describes the complete structure of the Neo4j database:
+            ${this.SCHEMA_DESCRIPTION}
+            
+            ## Response Format
+            You MUST respond in this JSON format:
+            {
+              "fixedQuery": "corrected valid Cypher query",
+              "errorMessage": "explain if you couldn't fix it", 
+              "success": true/false
+            }
+            
+            ## Important Guidelines
+            - Preserve the original query's intent and requested data
+            - Fix syntax errors, invalid property names, or relationship issues
+            - Ensure proper use of datetime formats (e.g., datetime('2023-01-01'))
+            - Add LIMIT clauses (max 100) to prevent performance issues
+            - Only use features available in Neo4j Community Edition (no APOC or GDS)
+            - If you cannot fix the query, explain why in the errorMessage field and set success to false
+            - If you can fix the query, provide the corrected query and set success to true
+            - Always simplify complex queries that may cause performance issues
+            
+            ## Common Neo4j Error Fixes
+            - For "Type mismatch" errors: Ensure property types match (string vs number vs datetime)
+            - For "Unknown procedure" errors: Remove APOC or GDS library calls
+            - For "Variable not defined" errors: Check variable names in MATCH and WITH clauses
+            - For "Not a procedure" errors: Fix function call syntax
+            - For "Parameter not defined" errors: Replace parameters with literal values
+            - For "Invalid input" errors: Fix syntax errors in the query structure
+        `;
+    }
+}
